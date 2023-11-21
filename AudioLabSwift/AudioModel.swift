@@ -1,49 +1,41 @@
 //
 //  AudioModel.swift
-//  AudioLabSwift
+//  Saxophone ML
 //
-//  Created by Eric Larson 
-//  Copyright © 2020 Eric Larson. All rights reserved.
+//  Created by Rafe Forward on 11/19/23.
 //
 
 import Foundation
-import Accelerate
-
 class AudioModel {
-    
-    // MARK: Properties
     private var BUFFER_SIZE:Int
-    // thse properties are for interfaceing with the API
-    // the user can access these arrays at any time and plot them if they like
     var timeData:[Float]
-    var fftData:[Float]
-    lazy var samplingRate:Int = {
-        return Int(self.audioManager!.samplingRate)
-    }()
-    
+    var isRecording = false
+    var recordedAudio: [Float] = []
+    var playbackData: [Float] = []
+    var playbackReadHead = 0
     // MARK: Public Methods
     init(buffer_size:Int) {
         BUFFER_SIZE = buffer_size
         // anything not lazily instatntiated should be allocated here
         timeData = Array.init(repeating: 0.0, count: BUFFER_SIZE)
-        fftData = Array.init(repeating: 0.0, count: BUFFER_SIZE/2)
     }
     
-    // public function for starting processing of microphone data
     func startMicrophoneProcessing(withFps:Double){
         // setup the microphone to copy to circualr buffer
+        isRecording = true
         if let manager = self.audioManager{
+            self.audioManager?.outputBlock = nil
             manager.inputBlock = self.handleMicrophone
+            
             
             // repeat this fps times per second using the timer class
             //   every time this is called, we update the arrays "timeData" and "fftData"
             Timer.scheduledTimer(withTimeInterval: 1.0/withFps, repeats: true) { _ in
-                self.runEveryInterval()
+                
             }
-            
         }
+        
     }
-    
     
     // You must call this when you want the audio to start being handled by our model
     func play(){
@@ -52,18 +44,50 @@ class AudioModel {
         }
     }
     
+    func pause(){
+        if let manager = self.audioManager{
+            manager.pause()
+        }
+        isRecording = false
+    }
+    func startPlayback() {
+        playbackReadHead = 0
+
+        audioManager?.outputBlock = { [weak self] (outputData, numFrames, numChannels) in
+            guard let self = self else { return }
+
+            for frame in 0..<Int(numFrames) {
+                for channel in 0..<Int(numChannels) {
+                    let index = frame * Int(numChannels) + channel
+
+                    if self.playbackReadHead < self.recordedAudio.count {
+                        // Write the recorded data to the output
+                        outputData?[index] = self.recordedAudio[self.playbackReadHead]
+                        self.playbackReadHead += 1
+                    } else {
+                        // If we've reached the end of the recorded data, fill with zeros
+                        outputData?[index] = 0
+                    }
+                }
+            }
+        }
+
+        // Start playback
+        audioManager?.play()
+    }
     
     //==========================================
     // MARK: Private Properties
     private lazy var audioManager:Novocaine? = {
         return Novocaine.audioManager()
     }()
-    
-    private lazy var fftHelper:FFTHelper? = {
-        return FFTHelper.init(fftSize: Int32(BUFFER_SIZE))
-    }()
-    
-    
+    private func handleMicrophone (data:Optional<UnsafeMutablePointer<Float>>, numFrames:UInt32, numChannels: UInt32) {
+        // copy samples from the microphone into circular buffer
+        self.inputBuffer?.addNewFloatData(data, withNumSamples: Int64(numFrames))
+        for i in 0..<Int(numFrames * numChannels) {
+            recordedAudio.append(data![i])
+        }
+    }
     private lazy var inputBuffer:CircularBuffer? = {
         return CircularBuffer.init(numChannels: Int64(self.audioManager!.numInputChannels),
                                    andBufferSize: Int64(BUFFER_SIZE))
@@ -71,37 +95,5 @@ class AudioModel {
     
     
     //==========================================
-    // MARK: Private Methods
-    // NONE for this model
-    
-    //==========================================
     // MARK: Model Callback Methods
-    private func runEveryInterval(){
-        if inputBuffer != nil {
-            // copy time data to swift array
-            self.inputBuffer!.fetchFreshData(&timeData, // copied into this array
-                                             withNumSamples: Int64(BUFFER_SIZE))
-            
-            // now take FFT
-            fftHelper!.performForwardFFT(withData: &timeData,
-                                         andCopydBMagnitudeToBuffer: &fftData) // fft result is copied into fftData array
-            
-            // at this point, we have saved the data to the arrays:
-            //   timeData: the raw audio samples
-            //   fftData:  the FFT of those same samples
-            // the user can now use these variables however they like
-            
-        }
-    }
-    
-    //==========================================
-    // MARK: Audiocard Callbacks
-    // in obj-C it was (^InputBlock)(float *data, UInt32 numFrames, UInt32 numChannels)
-    // and in swift this translates to:
-    private func handleMicrophone (data:Optional<UnsafeMutablePointer<Float>>, numFrames:UInt32, numChannels: UInt32) {
-        // copy samples from the microphone into circular buffer
-        self.inputBuffer?.addNewFloatData(data, withNumSamples: Int64(numFrames))
-    }
-    
-    
 }
