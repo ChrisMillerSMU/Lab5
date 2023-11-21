@@ -41,7 +41,8 @@ class AudioModel {
     func play(){
         self.audioManager?.play()
     }
-    
+   
+    // You must call this wehn you want the audio to stop being handled by our model
     func pause(){
         self.audioManager?.pause()
     }

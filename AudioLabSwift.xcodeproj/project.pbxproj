@@ -22,6 +22,7 @@
 		B65B5A7A24F4523C00E74E73 /* AudioModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65B5A7924F4523C00E74E73 /* AudioModel.swift */; };
 		B65B5A7D24F458D700E74E73 /* FFTHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B65B5A7B24F458D700E74E73 /* FFTHelper.m */; };
 		B65B5A8124F4AAB800E74E73 /* MetalGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65B5A8024F4AAB800E74E73 /* MetalGraph.swift */; };
+		C07559082B0D66DD001414B7 /* RequestModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C07559072B0D66DD001414B7 /* RequestModels.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +48,7 @@
 		B65B5A7B24F458D700E74E73 /* FFTHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FFTHelper.m; path = AudioLabSwift/Utilities/FFTHelper.m; sourceTree = SOURCE_ROOT; };
 		B65B5A7C24F458D700E74E73 /* FFTHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FFTHelper.h; path = AudioLabSwift/Utilities/FFTHelper.h; sourceTree = SOURCE_ROOT; };
 		B65B5A8024F4AAB800E74E73 /* MetalGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalGraph.swift; sourceTree = "<group>"; };
+		C07559072B0D66DD001414B7 /* RequestModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestModels.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,12 +82,13 @@
 			isa = PBXGroup;
 			children = (
 				B6BE4C9A2AC47F7100488FE3 /* Utilities */,
-				5D90B8882B0D21E300706FA5 /* EvaluationModel.swift */,
-				5D90B8862B0D21A900706FA5 /* TimerModel.swift */,
 				B65B5A5924F4409F00E74E73 /* AppDelegate.swift */,
 				B65B5A5B24F4409F00E74E73 /* SceneDelegate.swift */,
 				B65B5A5D24F4409F00E74E73 /* ViewController.swift */,
+				C07559072B0D66DD001414B7 /* RequestModels.swift */,
 				B65B5A7924F4523C00E74E73 /* AudioModel.swift */,
+				5D90B8882B0D21E300706FA5 /* EvaluationModel.swift */,
+				5D90B8862B0D21A900706FA5 /* TimerModel.swift */,
 				B65B5A5F24F4409F00E74E73 /* Main.storyboard */,
 				B65B5A6224F440A100E74E73 /* Assets.xcassets */,
 				B65B5A6424F440A100E74E73 /* LaunchScreen.storyboard */,
@@ -196,6 +199,7 @@
 				B65B5A5A24F4409F00E74E73 /* AppDelegate.swift in Sources */,
 				B65B5A7D24F458D700E74E73 /* FFTHelper.m in Sources */,
 				B65B5A5C24F4409F00E74E73 /* SceneDelegate.swift in Sources */,
+				C07559082B0D66DD001414B7 /* RequestModels.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
