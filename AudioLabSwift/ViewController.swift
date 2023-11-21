@@ -1,19 +1,11 @@
-//
-//  ViewController.swift
-//  Saxophone ML
-//
-//  Created by Reece Iriye on 11/15/23.
-//
-
-// HERE IS THE SERVER URL FOR MY SERVER
-let SERVER_URL = "http://10.9.170.145:8000"
-
+let SERVER_URL = "http://10.8.159.2120:8000"
 
 import UIKit
 import Foundation
 
-
 class ViewController: UIViewController, URLSessionDelegate {
+    
+    let audio = AudioModel(buffer_size: 22050)
     
     // MARK: Class Properties
     lazy var session: URLSession = {
@@ -102,8 +94,6 @@ class ViewController: UIViewController, URLSessionDelegate {
         }
         task.resume()
     }
-
-    
     
     let operationQueue = OperationQueue()
     
@@ -120,6 +110,11 @@ class ViewController: UIViewController, URLSessionDelegate {
     @IBOutlet weak var predictionLabel: UILabel!
     
     @IBOutlet weak var accuracyLabel: UILabel!
+    
+    
+    @IBAction func logButton(_ sender: Any) {
+        print(audio.timeData)
+    }
     
     // Model to retain stopwatch time for train button
     lazy var trainTimer: TimerModel = {
@@ -215,6 +210,10 @@ class ViewController: UIViewController, URLSessionDelegate {
         self.testButton.titleLabel?.text = "TEST"
         button.backgroundColor = .red
         self.recordInput()
+        self.audio.startMicrophoneProcessing(withFps: 10)
+        
+        //
+        
         self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
             self.stopRecord(button:button)
         }
@@ -227,6 +226,7 @@ class ViewController: UIViewController, URLSessionDelegate {
     
     func stopRecord(button:UIButton) {
         //code to send off data
+        print(audio.timeData)
         
         let postType = button.titleLabel?.text
         var currentName = "Spectrogram CNN"
@@ -243,9 +243,11 @@ class ViewController: UIViewController, URLSessionDelegate {
         // THIS IS WHERE WE SEND UP THE DATA
         
         if(postType == "TEST"){
+            print("MODEL TEST 1", currentModel)
             self.sendPredictionPostRequest(model:currentModel)
         }
         else{
+            print("MODEL TEST 2", currentModel)
             self.sendTrainingPostRequest(model:currentModel, label: currentName)
         }
         
