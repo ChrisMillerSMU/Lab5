@@ -128,21 +128,12 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Loading..." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fqY-6g-nSM">
-                                <rect key="frame" x="152.66666666666666" y="790" width="124.99999999999997" height="36"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fqY-6g-nSM">
+                                <rect key="frame" x="211.66666666666666" y="790" width="6.6666666666666572" height="36"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="30"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uoq-92-TYj">
-                                <rect key="frame" x="187" y="526" width="58" height="35"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="LOG"/>
-                                <connections>
-                                    <action selector="logButton:" destination="HF9-VW-mcK" eventType="touchUpInside" id="cVA-db-qfp"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="T8F-5i-xw9"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -281,10 +272,9 @@
                         <outlet property="accuracyLabel" destination="xAw-vI-eLO" id="jXJ-7Z-gva"/>
                         <outlet property="modelSegmentedSwitch" destination="AaR-0d-1np" id="j6W-K4-Ppz"/>
                         <outlet property="nameDropdownButton" destination="P9c-8f-ROG" id="fJP-Ad-hFT"/>
-                        <outlet property="predictionLabel" destination="PYU-3g-jMj" id="3QL-Yn-zM4"/>
+                        <outlet property="predictionLabel" destination="fqY-6g-nSM" id="fKr-Tp-Qk0"/>
                         <outlet property="testButton" destination="onp-Qe-Fzc" id="i0H-Ds-dt4"/>
                         <outlet property="trainButton" destination="Ijn-nu-Jjw" id="o1z-up-eja"/>
-                        <outlet property="trainingLabel" destination="Xiu-rL-Wx3" id="xpj-vt-Hyu"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vj5-9h-9a7" sceneMemberID="firstResponder"/>

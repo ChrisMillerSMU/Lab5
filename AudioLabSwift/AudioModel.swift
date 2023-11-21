@@ -74,7 +74,6 @@ class AudioModel {
     }
     
     private func handleMicrophone (data:Optional<UnsafeMutablePointer<Float>>, numFrames:UInt32, numChannels: UInt32) {
-        print("DATA TEST", data)
         self.inputBuffer?.addNewFloatData(data, withNumSamples: Int64(numFrames))
     }
 }

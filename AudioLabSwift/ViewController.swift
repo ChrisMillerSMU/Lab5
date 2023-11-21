@@ -1,4 +1,4 @@
-let SERVER_URL = "http://10.8.159.2120:8000"
+let SERVER_URL = "http://10.8.159.212:8000"
 
 import UIKit
 import Foundation
@@ -30,7 +30,17 @@ class ViewController: UIViewController, URLSessionDelegate {
         
         // Fetch model accuracies
         self.getModelAccuracies()
+        
+        // Start audio processing
+        self.audio.startMicrophoneProcessing(withFps: 10)
+        self.audio.play()
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        // Pause in the case that this view is exited
+        self.audio.pause()
+    }
+    
     
     // MARK: Model Accuracy Request
     
@@ -99,8 +109,6 @@ class ViewController: UIViewController, URLSessionDelegate {
     
     @IBOutlet weak var modelSegmentedSwitch: UISegmentedControl!
     
-    @IBOutlet weak var trainingLabel: UILabel!
-    
     @IBOutlet weak var nameDropdownButton: UIButton!
     
     @IBOutlet weak var trainButton: UIButton!
@@ -110,11 +118,6 @@ class ViewController: UIViewController, URLSessionDelegate {
     @IBOutlet weak var predictionLabel: UILabel!
     
     @IBOutlet weak var accuracyLabel: UILabel!
-    
-    
-    @IBAction func logButton(_ sender: Any) {
-        print(audio.timeData)
-    }
     
     // Model to retain stopwatch time for train button
     lazy var trainTimer: TimerModel = {
@@ -209,25 +212,14 @@ class ViewController: UIViewController, URLSessionDelegate {
         self.trainButton.titleLabel?.text = "Train"
         self.testButton.titleLabel?.text = "TEST"
         button.backgroundColor = .red
-        self.recordInput()
-        self.audio.startMicrophoneProcessing(withFps: 10)
-        
-        //
         
         self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
             self.stopRecord(button:button)
         }
     }
     
-    func recordInput() {
-        //code to record audio data
-        // start storing to an array in our audio model
-    }
-    
     func stopRecord(button:UIButton) {
         //code to send off data
-        print(audio.timeData)
-        
         let postType = button.titleLabel?.text
         var currentName = "Spectrogram CNN"
         //Straight to backend
@@ -243,13 +235,13 @@ class ViewController: UIViewController, URLSessionDelegate {
         // THIS IS WHERE WE SEND UP THE DATA
         
         if(postType == "TEST"){
-            print("MODEL TEST 1", currentModel)
             self.sendPredictionPostRequest(model:currentModel)
         }
         else{
-            print("MODEL TEST 2", currentModel)
             self.sendTrainingPostRequest(model:currentModel, label: currentName)
         }
+        
+        
         
         self.timer?.invalidate()
         self.timer = nil
@@ -268,7 +260,7 @@ class ViewController: UIViewController, URLSessionDelegate {
     }
     
     func sendPredictionPostRequest(model: String) {
-        let data = [Float](repeating: 0.001, count: 22050) // Make sure this is [Float], not [Double]
+        let data = audio.timeData // Make sure this is [Float], not [Double]
         
         let baseURL = "\(SERVER_URL)/predict_one"
         guard let postUrl = URL(string: baseURL) else { return }
@@ -307,12 +299,13 @@ class ViewController: UIViewController, URLSessionDelegate {
                     print("Error decoding JSON:", error)
                 }
             }
-            
+
             postTask.resume() // Start the task
             
         } catch {
             print("Error encoding JSON:", error)
         }
+    
     }
     
     struct TrainingRequest: Codable {
@@ -322,7 +315,7 @@ class ViewController: UIViewController, URLSessionDelegate {
     }
     
     func sendTrainingPostRequest(model: String, label: String) {
-        let data = [Float](repeating: 0.001, count: 22050) // Use [Float] to match the expected Pydantic model
+        let data = audio.timeData // Use [Float] to match the expected Pydantic model
 
         let baseURL = "\(SERVER_URL)/upload_labeled_datapoint_and_update_model"
         guard let postUrl = URL(string: baseURL) else { return }
@@ -351,10 +344,21 @@ class ViewController: UIViewController, URLSessionDelegate {
                 do {
                     if let jsonDictionary = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
                         print(jsonDictionary)
+                        // Update the visible label that we are able to see in the View each time we run a request
                         if let labelResponse = jsonDictionary["resub_accuracy"] as? String {
+                            // Update the accuracy of the model of interest we are looking at
+                            self.evaluationModel.setAccuracy(
+                                accuracy: labelResponse,
+                                myCase: model
+                            )
+                            
+                            // Update string and update label with that string
+                            self.evaluationModel.updateLabelString()
                             DispatchQueue.main.async {
-                                self.accuracyLabel.text = labelResponse
+                                self.accuracyLabel.text = self.evaluationModel.getLabelString()
                             }
+                            
+                            
                         }
                     }
                 } catch {
@@ -377,8 +381,6 @@ class ViewController: UIViewController, URLSessionDelegate {
         if #available(iOS 14.0, *) {
             self.nameDropdownButton.menu = UIMenu(children: [
                 UIAction(title: "Reece", handler: popUpButtonClosure),
-                UIAction(title: "Ethan", handler: popUpButtonClosure),
-                UIAction(title: "Rafe", handler: popUpButtonClosure),
                 UIAction(title: "Chris", handler: popUpButtonClosure)
             ])
         } else {
