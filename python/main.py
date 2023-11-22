@@ -294,10 +294,9 @@ async def upload_labeled_datapoint_and_update_model(data: DataPoint) -> Dict[str
         # Update the model in the dictionary
         model_dictionary[data.ml_model_type] = model
 
-        # CODE BELOW DISABLED.
         # Save updated model to file path
-        # spectrogram_regression_path = "../ml_models/mel_spectrogram_cnn.pth" 
-        # joblib.dump(model, spectrogram_regression_path)
+        spectrogram_cnn_path = "../ml_models/mel_spectrogram_cnn.pth" 
+        torch.save(model.state_dict(), spectrogram_cnn_path)
 
         # Return the accuracy of the trained model
         return {"resub_accuracy": str(np.round(accuracy, 1))}
